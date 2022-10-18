@@ -18,29 +18,52 @@ def main():
             self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
             self.mainlayout = QFrame(self)
             self.mainlayout.setGeometry(0,0,1280,864)
-            self.mainlayout.setStyleSheet("background-color:qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:1, stop:0 rgba(63, 76, 107, 255), stop:1 rgba(63, 76, 107, 255)); border-radius:50px")
+            self.mainlayout.setStyleSheet("background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(15, 32, 39, 255), stop:0.5 rgba(32, 58, 67, 255), stop:1 rgba(44, 83, 100, 255)); border-radius:50px")
             self.center()
-            self.oldPos = self.pos()
+            self.oldPos = self.screen().availableGeometry().center()
             self.initUI()
-            self.equalRoundCorners()
+
 
         def initUI(self):
             self.searchInput = QLineEdit(self)
-            self.searchInput.setGeometry(70,750,300,50)
+            self.searchInput.setGeometry(100,150,350,50)
             self.searchInput.setStyleSheet("border-radius:25")
             self.searchInput.setFont(QFont("Arial",17))
+            self.searchInput.setPlaceholderText("Video Link Goes Here")
             self.searchInput.setAlignment(Qt.AlignCenter)
 
-            self.AddToQueryButton = QPushButton(self)
-            self.AddToQueryButton.setGeometry(390,750,75,50)
-            self.AddToQueryButton.setText("Add To Query")
-            self.AddToQueryButton.setFont(QFont("Arial",14))
-            self.AddToQueryButton.setStyleSheet("QPushButton{background-color:#dd1123; border-radius:25px;}\
+            self.searchVideoButton = QPushButton(self)
+            self.searchVideoButton.setGeometry(100,215,350,50)
+            self.searchVideoButton.setText("Search For Video")
+            self.searchVideoButton.setFont(QFont("Arial",14))
+            self.searchVideoButton.setStyleSheet("QPushButton{background-color:#dd1123; border-radius:25px;}\
                                             QPushButton:hover{background-color:#ef3343;}\
                                             QPushButton:pressed{background-color:#ed1b2d}")
-            self.AddToQueryButton.clicked.connect(self.AddToQuery)
+            self.searchVideoButton.clicked.connect(self.SearchVideo)
+        #===========================================Video Search Output layout for add queue======================================#
+            self.videolayout = QFrame(self)
+            self.videolayout.setGeometry(100,280,350,500)
+            self.videolayout.setStyleSheet("background-color:#99f2c8; border-radius:25px")
 
+            self.videoNameLabel = QLabel(self.videolayout)
+            self.videoNameLabel.setGeometry(75,20,200,50)
+            self.videoNameLabel.setStyleSheet("background-color:#c6f8e0")
+            self.videoNameLabel.setText("Video Name")
+            self.videoNameLabel.setFont(QFont("Arial",20))
+            self.videoNameLabel.setAlignment(Qt.AlignCenter)
 
+            self.videoNameDisplay = QLabel(self.videolayout)
+            self.videoNameDisplay.setGeometry(25,65,300,50)
+            self.videoNameDisplay.setAlignment(Qt.AlignCenter)
+            self.videoNameDisplay.setFont(QFont("Arial",13))
+            self.videoNameDisplay.setWordWrap(True)
+
+            self.QualitySelection = QComboBox(self)
+            self.QualitySelection.setGeometry(200,530,150,35)
+            self.QualitySelection.setStyleSheet("background-color:#FFEFBA")            
+        #=================================================================================================================#
+
+        #===========================================================Close and Hide Buttons=======================================#
             self.closeButton = QPushButton(self)
             self.closeButton.setGeometry(1230,0,50,50)
             self.closeButton.setStyleSheet("QPushButton{background-color:#dd1123; border-top-right-radius:25px;}\
@@ -49,7 +72,7 @@ def main():
             self.closeButton.setText("✖️")
             self.closeButton.setFont(QFont("Arail",15))
             self.closeButton.clicked.connect(self.close)
-            
+
             self.hideButton = QPushButton(self)
             self.hideButton.setGeometry(1180,0,50,50)
             self.hideButton.setStyleSheet("QPushButton{background-color:#dd6611; color:black; border-bottom-left-radius:25px;}\
@@ -60,18 +83,38 @@ def main():
             self.hideButton.clicked.connect(self.showMinimized)
 
             self.errorDialog = QErrorMessage(self)
+            self.errorDialog.setWindowTitle("Error")
+            
+            self.clearFocusButton = QPushButton(self)
+            self.clearFocusButton.setGeometry(0,0,0,0)
+            self.clearFocusButton.setFocus()
+        #============================================================================================================================#
             
             
         
-        def AddToQuery(self):
-            try:
-                if(self.searchInput.text().strip()) == "":
-                    self.errorDialog.showMessage("Search Input is Empty")
-                else:
-                    raw_request = requests.get("https://www.youtube.com/results?search_query="+self.searchInput.text().strip().replace(" ","+"))
-                    print(raw_request.text)
-            except:
-                self.errorDialog.showMessage("Wrong Search Type")
+        def SearchVideo(self):
+            videoSearchText = self.searchInput.text()
+            videoSearchText.replace(" ","")
+            if videoSearchText == "":
+                self.errorDialog.showMessage("Link Input is Empty","Error")
+            elif "youtube" in videoSearchText:
+                try:
+                    self.tempVideo = YouTube(videoSearchText)
+                    title = self.tempVideo.title
+                    self.videoNameDisplay.setText(title)
+                    self.QualitySelection.addItems()
+                except:
+                    self.errorDialog.showMessage("Wrong Link","Error")
+            else:
+                try:
+                    self.tempVideo = YouTube("https://www.youtube.com/watch?v="+videoSearchText)
+                    title = self.tempVideo.title
+                    self.videoNameDisplay.setText(title)
+                except:
+                    self.errorDialog.showMessage("Wrong Link","Error")
+
+            
+
 
 
         #======================dragging frameless window==================#
@@ -88,18 +131,6 @@ def main():
             self.move(qr.topLeft())
         #=================================================================#
         
-        #
-        def equalRoundCorners(self):
-            self.topleftButton = QLabel(self)
-            self.topleftButton.setGeometry(0,0,50,50)
-            self.topleftButton.setStyleSheet("background-color:rgba(63, 76, 107, 255); border-top-left-radius:25px;")
-            self.bottomleftButton = QLabel(self)
-            self.bottomleftButton.setGeometry(0,814,50,50)
-            self.bottomleftButton.setStyleSheet("background-color:rgba(63, 76, 107, 255); border-bottom-left-radius:25px;")
-            self.bottomrightButton = QLabel(self)
-            self.bottomrightButton.setGeometry(1230,814,50,50)
-            self.bottomrightButton.setStyleSheet("background-color:rgba(63, 76, 107, 255); border-bottom-right-radius:25px;")
-
 
     def runApp():
         app = QApplication(sys.argv)
