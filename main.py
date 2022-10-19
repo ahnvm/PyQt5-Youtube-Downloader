@@ -176,7 +176,7 @@ def main():
 
     def runApp():
         app = QApplication(sys.argv)
-        window = dailyReminder()
+        window = youtubeDownloader()
         window.show()
         sys.exit(app.exec())
 
