@@ -36,30 +36,37 @@ def main():
             self.searchVideoButton.setGeometry(100,215,350,50)
             self.searchVideoButton.setText("Search For Video")
             self.searchVideoButton.setFont(QFont("Arial",14))
-            self.searchVideoButton.setStyleSheet("QPushButton{background-color:#dd1123; border-radius:25px;}\
-                                            QPushButton:hover{background-color:#ef3343;}\
-                                            QPushButton:pressed{background-color:#ed1b2d}")
+            self.searchVideoButton.setStyleSheet("QPushButton{background-color:#7bc5ea; border-radius:25px;}\
+                                            QPushButton:hover{background-color:#a3d6f0;}\
+                                            QPushButton:pressed{background-color:#91cfed}")
             self.searchVideoButton.clicked.connect(self.SearchVideo)
         #===========================================Video Search Output layout for add queue======================================#
             self.videolayout = QFrame(self)
             self.videolayout.setGeometry(100,280,350,500)
-            self.videolayout.setStyleSheet("background-color:#99f2c8; border-radius:25px")
+            self.videolayout.setStyleSheet("background-color:#93CFA4; border-radius:25px")
 
             self.videoNameLabel = QLabel(self.videolayout)
-            self.videoNameLabel.setGeometry(75,20,200,50)
+            self.videoNameLabel.setGeometry(25,20,300,50)
             self.videoNameLabel.setStyleSheet("background-color:#c6f8e0")
             self.videoNameLabel.setText("Video Name")
             self.videoNameLabel.setFont(QFont("Arial",20))
             self.videoNameLabel.setAlignment(Qt.AlignCenter)
 
             self.videoNameDisplay = QLabel(self.videolayout)
-            self.videoNameDisplay.setGeometry(25,65,300,50)
+            self.videoNameDisplay.setGeometry(25,105,300,100)
             self.videoNameDisplay.setAlignment(Qt.AlignCenter)
             self.videoNameDisplay.setFont(QFont("Arial",13))
             self.videoNameDisplay.setWordWrap(True)
 
+            self.QualitySelectionLabel = QLabel(self.videolayout)
+            self.QualitySelectionLabel.setGeometry(25,285,300,50)
+            self.QualitySelectionLabel.setStyleSheet("background-color:#c6f8e0")
+            self.QualitySelectionLabel.setText("Available Qualities")
+            self.QualitySelectionLabel.setFont(QFont("Arial",20))
+            self.QualitySelectionLabel.setAlignment(Qt.AlignCenter)
+
             self.QualitySelection = QComboBox(self)
-            self.QualitySelection.setGeometry(200,530,150,35)
+            self.QualitySelection.setGeometry(200,630,150,35)
             self.QualitySelection.setStyleSheet("background-color:#FFEFBA")            
         #=================================================================================================================#
 
@@ -88,7 +95,7 @@ def main():
             self.clearFocusButton = QPushButton(self)
             self.clearFocusButton.setGeometry(0,0,0,0)
             self.clearFocusButton.setFocus()
-        #============================================================================================================================#
+        #======================================================Functions=====================================================================#
             
             
         
@@ -102,18 +109,17 @@ def main():
                     self.tempVideo = YouTube(videoSearchText)
                     title = self.tempVideo.title
                     self.videoNameDisplay.setText(title)
-                    self.QualitySelection.addItems()
                 except:
-                    self.errorDialog.showMessage("Wrong Link","Error")
+                    self.errorDialog.showMessage("Wrong Link or Video Not Found","Error")
             else:
                 try:
                     self.tempVideo = YouTube("https://www.youtube.com/watch?v="+videoSearchText)
                     title = self.tempVideo.title
                     self.videoNameDisplay.setText(title)
                 except:
-                    self.errorDialog.showMessage("Wrong Link","Error")
+                    self.errorDialog.showMessage("Wrong Link or Video Not Found","Error")
 
-            
+        #============================================================================================================================#    
 
 
 
