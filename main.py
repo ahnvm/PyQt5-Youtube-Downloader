@@ -4,12 +4,11 @@ from PyQt5.QtCore import *
 from PyQt5.Qt import *
 from PyQt5.QtGui import *
 from pytube import YouTube
-import requests
 import sys
 
 
 def main():
-    class dailyReminder(QMainWindow):
+    class youtubeDownloader(QMainWindow):
         def __init__(self):
             super().__init__()
             self.setWindowTitle("Daily Reminder")
