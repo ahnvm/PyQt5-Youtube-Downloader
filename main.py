@@ -26,20 +26,24 @@ def main():
 
         def initUI(self):
             self.searchInput = QLineEdit(self)
-            self.searchInput.setGeometry(100,150,350,50)
+            self.searchInput.setGeometry(100,135,350,50)
             self.searchInput.setStyleSheet("border-radius:25")
             self.searchInput.setFont(QFont("Arial",17))
             self.searchInput.setPlaceholderText("Video Link Goes Here")
             self.searchInput.setAlignment(Qt.AlignCenter)
 
             self.searchVideoButton = QPushButton(self)
-            self.searchVideoButton.setGeometry(100,215,350,50)
+            self.searchVideoButton.setGeometry(125,200,300,50)
             self.searchVideoButton.setText("Search For Video")
             self.searchVideoButton.setFont(QFont("Arial",14))
             self.searchVideoButton.setStyleSheet("QPushButton{background-color:#7bc5ea; border-radius:25px;}\
                                             QPushButton:hover{background-color:#a3d6f0;}\
                                             QPushButton:pressed{background-color:#91cfed}")
             self.searchVideoButton.clicked.connect(self.SearchVideo)
+
+            self.randomButton =QPushButton(self)
+            self.randomButton.setGeometry(0,100,0,0)
+            self.randomButton.clicked.connect(self.downloadVideo)
         #===========================================Video Search Output layout for add queue======================================#
             self.videolayout = QFrame(self)
             self.videolayout.setGeometry(100,280,350,500)
@@ -109,6 +113,7 @@ def main():
                     self.tempVideo = YouTube(videoSearchText)
                     title = self.tempVideo.title
                     self.videoNameDisplay.setText(title)
+                    self.SearchQualities(self.tempVideo)
                 except:
                     self.errorDialog.showMessage("Wrong Link or Video Not Found","Error")
             else:
@@ -116,8 +121,40 @@ def main():
                     self.tempVideo = YouTube("https://www.youtube.com/watch?v="+videoSearchText)
                     title = self.tempVideo.title
                     self.videoNameDisplay.setText(title)
+                    self.SearchQualities(self.tempVideo)
                 except:
                     self.errorDialog.showMessage("Wrong Link or Video Not Found","Error")
+        
+        def SearchQualities(self,video):
+            try:
+                qlist = video.streams.filter(file_extension="mp4")
+                qlistText = []
+                for item in qlist:
+                    item = str(item)
+                    qlistText.append(item)
+                qlistLast = []
+                for i in qlistText:
+                    if "360" in i:
+                        qlistLast.append(360)
+                    if "480" in i:
+                        qlistLast.append(480)
+                    if "720" in i:
+                        qlistLast.append(720)
+                    if "1080" in i:
+                        qlistLast.append(1080)
+                qlistLast = set(qlistLast)
+                qlistLast = list(qlistLast)
+                qlistLast.sort()
+
+                for quality in qlistLast:
+                    self.QualitySelection.addItem(f"{quality}p")
+
+            except:
+                self.errorDialog.showMessage("Unknown Error","Error")
+        
+        def downloadVideo(self):
+            print(self.QualitySelection.currentText())
+
 
         #============================================================================================================================#    
 
