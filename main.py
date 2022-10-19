@@ -25,16 +25,16 @@ def main():
 
         def initUI(self):
             self.searchInput = QLineEdit(self)
-            self.searchInput.setGeometry(100,135,350,50)
+            self.searchInput.setGeometry(100,105,350,50)
             self.searchInput.setStyleSheet("border-radius:25")
             self.searchInput.setFont(QFont("Arial",17))
             self.searchInput.setPlaceholderText("Video Link Goes Here")
             self.searchInput.setAlignment(Qt.AlignCenter)
 
             self.searchVideoButton = QPushButton(self)
-            self.searchVideoButton.setGeometry(125,200,300,50)
+            self.searchVideoButton.setGeometry(125,190,300,50)
             self.searchVideoButton.setText("Search For Video")
-            self.searchVideoButton.setFont(QFont("Arial",14))
+            self.searchVideoButton.setFont(QFont("Arial",21))
             self.searchVideoButton.setStyleSheet("QPushButton{background-color:#7bc5ea; border-radius:25px;}\
                                             QPushButton:hover{background-color:#a3d6f0;}\
                                             QPushButton:pressed{background-color:#91cfed}")
@@ -46,24 +46,25 @@ def main():
         #===========================================Video Search Output layout for add queue======================================#
             self.videolayout = QFrame(self)
             self.videolayout.setGeometry(100,280,350,500)
-            self.videolayout.setStyleSheet("background-color:#93CFA4; border-radius:25px")
+            self.videolayout.setStyleSheet("background-color:rgba(147,207,164,160); border-radius:25px")
 
             self.videoNameLabel = QLabel(self.videolayout)
             self.videoNameLabel.setGeometry(25,20,300,50)
-            self.videoNameLabel.setStyleSheet("background-color:#c6f8e0")
+            self.videoNameLabel.setStyleSheet("background-color:rgba(198,248,224,160)")
             self.videoNameLabel.setText("Video Name")
             self.videoNameLabel.setFont(QFont("Arial",20))
             self.videoNameLabel.setAlignment(Qt.AlignCenter)
 
             self.videoNameDisplay = QLabel(self.videolayout)
-            self.videoNameDisplay.setGeometry(25,105,300,100)
+            self.videoNameDisplay.setGeometry(25,105,300,150)
+            self.videoNameDisplay.setStyleSheet("background-color: rgba(255,239,186,160)")
             self.videoNameDisplay.setAlignment(Qt.AlignCenter)
             self.videoNameDisplay.setFont(QFont("Arial",13))
             self.videoNameDisplay.setWordWrap(True)
 
             self.QualitySelectionLabel = QLabel(self.videolayout)
             self.QualitySelectionLabel.setGeometry(25,285,300,50)
-            self.QualitySelectionLabel.setStyleSheet("background-color:#c6f8e0")
+            self.QualitySelectionLabel.setStyleSheet("background-color:rgba(198,248,224,160)")
             self.QualitySelectionLabel.setText("Available Qualities")
             self.QualitySelectionLabel.setFont(QFont("Arial",20))
             self.QualitySelectionLabel.setAlignment(Qt.AlignCenter)
@@ -139,14 +140,24 @@ def main():
                         qlistLast.append(480)
                     if "720" in i:
                         qlistLast.append(720)
+                        if "60fps" in i:
+                            qlistLast.append(72060)
                     if "1080" in i:
                         qlistLast.append(1080)
+                        if "60fps" in i:
+                            qlistLast.append(108060)
                 qlistLast = set(qlistLast)
                 qlistLast = list(qlistLast)
                 qlistLast.sort()
 
                 for quality in qlistLast:
-                    self.QualitySelection.addItem(f"{quality}p")
+                   quality = str(quality)
+                   if len(quality)>4:
+                        tempQuality = quality.replace("60","")
+                        fps = "60"
+                        self.QualitySelection.addItem(f"{tempQuality}p{fps}fps")
+                   else:
+                        self.QualitySelection.addItem(quality+"p")
 
             except:
                 self.errorDialog.showMessage("Unknown Error","Error")
