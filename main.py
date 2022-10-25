@@ -5,6 +5,7 @@ from PyQt5.Qt import *
 from PyQt5.QtGui import *
 from pytube import YouTube
 import sys
+from threading import Thread
 
 
 def main():
@@ -15,6 +16,7 @@ def main():
             self.setGeometry(300,50,1280,864)
             self.setWindowFlag(Qt.WindowType.FramelessWindowHint)
             self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
+            self.setWindowTitle("Youtube Video Downloader ~By ahnvm")
             self.mainlayout = QFrame(self)
             self.mainlayout.setGeometry(0,0,1280,864)
             self.mainlayout.setStyleSheet("background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(15, 32, 39, 255), stop:0.5 rgba(32, 58, 67, 255), stop:1 rgba(44, 83, 100, 255)); border-radius:50px")
@@ -25,20 +27,28 @@ def main():
 
         def initUI(self):
             self.searchInput = QLineEdit(self)
-            self.searchInput.setGeometry(100,105,350,50)
+            self.searchInput.setGeometry(100,85,350,50)
             self.searchInput.setStyleSheet("border-radius:25")
             self.searchInput.setFont(QFont("Arial",17))
             self.searchInput.setPlaceholderText("Video Link Goes Here")
             self.searchInput.setAlignment(Qt.AlignCenter)
 
             self.searchVideoButton = QPushButton(self)
-            self.searchVideoButton.setGeometry(125,190,300,50)
+            self.searchVideoButton.setGeometry(125,145,300,50)
             self.searchVideoButton.setText("Search For Video")
             self.searchVideoButton.setFont(QFont("Arial",21))
             self.searchVideoButton.setStyleSheet("QPushButton{background-color:#7bc5ea; border-radius:25px;}\
                                             QPushButton:hover{background-color:#a3d6f0;}\
                                             QPushButton:pressed{background-color:#91cfed}")
-            self.searchVideoButton.clicked.connect(self.SearchVideo)
+            self.searchtread = Thread(target=self.SearchVideo,daemon=True)
+            self.searchVideoButton.clicked.connect(self.searchtread.start)
+
+            self.searchStatusLabel = QLabel(self)
+            self.searchStatusLabel.setGeometry(135,205,280,50)
+            self.searchStatusLabel.setStyleSheet("background-color: rgba(255,239,186,160); border-radius:25px")
+            self.searchStatusLabel.setText("Search Status")
+            self.searchStatusLabel.setAlignment(Qt.AlignCenter)
+            self.searchStatusLabel.setFont(QFont("Arial",17))
 
             self.randomButton =QPushButton(self)
             self.randomButton.setGeometry(0,100,0,0)
@@ -113,7 +123,9 @@ def main():
                     self.tempVideo = YouTube(videoSearchText)
                     title = self.tempVideo.title
                     self.videoNameDisplay.setText(title)
+                    self.searchStatusLabel.setText("Video Found")
                     self.SearchQualities(self.tempVideo)
+                    
                 except:
                     self.errorDialog.showMessage("Wrong Link or Video Not Found","Error")
             else:
@@ -121,7 +133,9 @@ def main():
                     self.tempVideo = YouTube("https://www.youtube.com/watch?v="+videoSearchText)
                     title = self.tempVideo.title
                     self.videoNameDisplay.setText(title)
+                    self.searchStatusLabel.setText("Video Found")
                     self.SearchQualities(self.tempVideo)
+                    
                 except:
                     self.errorDialog.showMessage("Wrong Link or Video Not Found","Error")
         
@@ -133,6 +147,7 @@ def main():
                     item = str(item)
                     qlistText.append(item)
                 qlistLast = []
+                self.QualitySelection.clear()
                 for i in qlistText:
                     if "360" in i:
                         qlistLast.append(360)
@@ -158,16 +173,13 @@ def main():
                         self.QualitySelection.addItem(f"{tempQuality}p{fps}fps")
                    else:
                         self.QualitySelection.addItem(quality+"p")
-
+                self.searchStatusLabel.setText("Qualities Found")
             except:
                 self.errorDialog.showMessage("Unknown Error","Error")
         
         def downloadVideo(self):
             print(self.QualitySelection.currentText())
-
-
         #============================================================================================================================#    
-
 
 
         #======================dragging frameless window==================#
