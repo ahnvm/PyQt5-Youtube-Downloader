@@ -1,3 +1,5 @@
+v0.3
+<p>Added MultiThreading</p>
 v0.2
 <p>Quality Selection Added</p>
 <p>Fps Options Added Inside Quality Selection</p>
