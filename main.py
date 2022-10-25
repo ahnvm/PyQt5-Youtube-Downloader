@@ -5,7 +5,6 @@ from PyQt5.Qt import *
 from PyQt5.QtGui import *
 from pytube import YouTube
 import sys
-from threading import Thread
 
 
 def main():
@@ -40,8 +39,7 @@ def main():
             self.searchVideoButton.setStyleSheet("QPushButton{background-color:#7bc5ea; border-radius:25px;}\
                                             QPushButton:hover{background-color:#a3d6f0;}\
                                             QPushButton:pressed{background-color:#91cfed}")
-            self.searchtread = Thread(target=self.SearchVideo,daemon=True)
-            self.searchVideoButton.clicked.connect(self.searchtread.start)
+            self.searchVideoButton.clicked.connect(self.SearchVideo)
 
             self.searchStatusLabel = QLabel(self)
             self.searchStatusLabel.setGeometry(135,205,280,50)
@@ -174,6 +172,8 @@ def main():
                    else:
                         self.QualitySelection.addItem(quality+"p")
                 self.searchStatusLabel.setText("Qualities Found")
+                self.QualitySelection.setCurrentIndex(0)
+                
             except:
                 self.errorDialog.showMessage("Unknown Error","Error")
         
