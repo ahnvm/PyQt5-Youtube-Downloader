@@ -12,12 +12,12 @@ def main():
         def __init__(self):
             super().__init__()
             self.setWindowTitle("Daily Reminder")
-            self.setGeometry(300,50,1280,864)
+            self.setGeometry(300,50,550,864)
             self.setWindowFlag(Qt.WindowType.FramelessWindowHint)
             self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
             self.setWindowTitle("Youtube Video Downloader ~By ahnvm")
             self.mainlayout = QFrame(self)
-            self.mainlayout.setGeometry(0,0,1280,864)
+            self.mainlayout.setGeometry(0,0,550,864)
             self.mainlayout.setStyleSheet("background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(15, 32, 39, 255), stop:0.5 rgba(32, 58, 67, 255), stop:1 rgba(44, 83, 100, 255)); border-radius:50px")
             self.center()
             self.oldPos = self.screen().availableGeometry().center()
@@ -32,10 +32,11 @@ def main():
             self.searchInput.setPlaceholderText("Video Link Goes Here")
             self.searchInput.setAlignment(Qt.AlignCenter)
 
+
             self.searchVideoButton = QPushButton(self)
             self.searchVideoButton.setGeometry(125,145,300,50)
             self.searchVideoButton.setText("Search For Video")
-            self.searchVideoButton.setFont(QFont("Arial",21))
+            self.searchVideoButton.setFont(QFont("Arial",20))
             self.searchVideoButton.setStyleSheet("QPushButton{background-color:#7bc5ea; border-radius:25px;}\
                                             QPushButton:hover{background-color:#a3d6f0;}\
                                             QPushButton:pressed{background-color:#91cfed}")
@@ -47,10 +48,6 @@ def main():
             self.searchStatusLabel.setText("Search Status")
             self.searchStatusLabel.setAlignment(Qt.AlignCenter)
             self.searchStatusLabel.setFont(QFont("Arial",17))
-
-            self.randomButton =QPushButton(self)
-            self.randomButton.setGeometry(0,100,0,0)
-            self.randomButton.clicked.connect(self.downloadVideo)
         #===========================================Video Search Output layout for add queue======================================#
             self.videolayout = QFrame(self)
             self.videolayout.setGeometry(100,280,350,500)
@@ -82,9 +79,21 @@ def main():
             self.QualitySelection.setStyleSheet("background-color:#FFEFBA")            
         #=================================================================================================================#
 
+        #====================================================Download Video Button====================================================#
+            self.downloadVideoButton = QPushButton(self)
+            self.downloadVideoButton.setEnabled(False)
+            self.downloadVideoButton.setGeometry(175,690,200,50)
+            self.downloadVideoButton.setText("Download")
+            self.downloadVideoButton.setFont(QFont("Arial",21))
+            self.downloadVideoButton.setStyleSheet("QPushButton{background-color:#7bc5ea; border-radius:25px;}\
+                                            QPushButton:hover{background-color:#a3d6f0;}\
+                                            QPushButton:pressed{background-color:#91cfed}")
+            self.downloadVideoButton.clicked.connect(self.downloadVideo)
+        #=================================================================================================================#
+
         #===========================================================Close and Hide Buttons=======================================#
             self.closeButton = QPushButton(self)
-            self.closeButton.setGeometry(1230,0,50,50)
+            self.closeButton.setGeometry(500,0,50,50)
             self.closeButton.setStyleSheet("QPushButton{background-color:#dd1123; border-top-right-radius:25px;}\
                                             QPushButton:hover{background-color:#ef3343;}\
                                             QPushButton:pressed{background-color:#ed1b2d}")
@@ -93,7 +102,7 @@ def main():
             self.closeButton.clicked.connect(self.close)
 
             self.hideButton = QPushButton(self)
-            self.hideButton.setGeometry(1180,0,50,50)
+            self.hideButton.setGeometry(450,0,50,50)
             self.hideButton.setStyleSheet("QPushButton{background-color:#dd6611; color:black; border-bottom-left-radius:25px;}\
                                             QPushButton:hover{background-color:#ef8133;}\
                                             QPushButton:pressed{background-color:#ed721b}")
@@ -168,17 +177,26 @@ def main():
                    if len(quality)>4:
                         tempQuality = quality.replace("60","")
                         fps = "60"
-                        self.QualitySelection.addItem(f"{tempQuality}p{fps}fps")
+                        self.QualitySelection.addItem(f"{tempQuality}p {fps}fps")
                    else:
                         self.QualitySelection.addItem(quality+"p")
-                self.searchStatusLabel.setText("Qualities Found")
-                self.QualitySelection.setCurrentIndex(0)
+                self.QualitySelection.setCurrentIndex(len(qlistLast)-1)
+                self.downloadVideoButton.setEnabled(True)
                 
             except:
                 self.errorDialog.showMessage("Unknown Error","Error")
         
         def downloadVideo(self):
-            print(self.QualitySelection.currentText())
+            try:
+                self.downloadVideoButton.setEnabled(False)
+                if("60fps" in self.QualitySelection.currentText()):
+                    self.tempVideo.streams.filter(fps=60,resolution=self.QualitySelection.currentText().replace(" 60fps",""),mime_type="video/mp4").first().download()
+                else:
+                    self.tempVideo.streams.filter(resolution=self.QualitySelection.currentText(),mime_type="video/mp4").first().download()
+                self.tempVideo = ""
+            except:
+                self.errorDialog.showMessage("Unknown Error", "Error")
+                self.downloadVideoButton.setEnabled(False)
         #============================================================================================================================#    
 
 
